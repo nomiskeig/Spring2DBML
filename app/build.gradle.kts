@@ -16,3 +16,12 @@ application {
     // Define the main class for the application.
     mainClass = "de.nomiskeig.spring2dbml.App"
 }
+tasks.jar {
+    manifest.attributes["Main-Class"] = "de.nomiskeig.spring2dbml.App"
+    val dependencies = configurations
+        .runtimeClasspath
+        .get()
+        .map(::zipTree) // OR .map { zipTree(it) }
+    from(dependencies) {         exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")}
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
