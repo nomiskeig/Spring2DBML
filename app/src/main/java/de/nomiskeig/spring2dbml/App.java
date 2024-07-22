@@ -6,6 +6,8 @@ package de.nomiskeig.spring2dbml;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import de.nomiskeig.spring2dbml.model.DBMLModel;
 import spoon.Launcher;
@@ -17,6 +19,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.AnnotationFactory;
 import spoon.reflect.visitor.filter.AnnotationFilter;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 public class App {
     public static void main(String[] args) {
@@ -29,9 +32,11 @@ public class App {
         launcher.buildModel();
         CtModel model = launcher.getModel();
         Collection<CtType<?>> types = model.getAllTypes();
+        List<String> tableNames = types.stream().filter(t -> t.hasAnnotation(Entity.class))
+                .map(t -> t.getAnnotation(Table.class).name()).collect(Collectors.toList());
         for (CtType<?> type : types) {
             if (type.hasAnnotation(Entity.class)) {
-                ep.process((CtClass<?>) type);
+                ep.process((CtClass<?>) type, tableNames);
             }
 
         }
@@ -39,11 +44,10 @@ public class App {
         DBMLFilePrinter printer = new DBMLFilePrinter(file, dbmlModel);
         try {
 
-        printer.print();
+            printer.print();
         } catch (IOException e) {
             System.out.println("Could not write to file.\nError: " + e.getMessage());
         }
-        
 
     }
 }

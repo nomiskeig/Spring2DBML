@@ -47,7 +47,9 @@ public class DBMLFilePrinter implements DBMLVisitor {
         for (DBMLTable table : model.getTables()) {
             table.accept(this);
         }
-        // TODO: visit ref
+        for (DBMLRef ref  : model.getRefs()) {
+            ref.accept(this);
+        }
     }
 
     @Override
@@ -63,8 +65,17 @@ public class DBMLFilePrinter implements DBMLVisitor {
 
     @Override
     public void visitDBMLRef(DBMLRef ref) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visitDBMLRef'");
+        res.append("Ref: ");
+        res.append(ref.getOriginTable());
+        res.append(".");
+        res.append(ref.getOriginColumn());
+        res.append(" ");
+        res.append(ref.getType().toString());
+        res.append(" ");
+        res.append(ref.getTargetTable());
+        res.append(".");
+        res.append(ref.getTargetColumn());
+        res.append("\n");
     }
 
 }
